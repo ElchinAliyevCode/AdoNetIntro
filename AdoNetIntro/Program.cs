@@ -1,4 +1,4 @@
-﻿using Microsoft.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Data;
 
 namespace AdoNetIntro
@@ -28,7 +28,7 @@ namespace AdoNetIntro
                 nameInput:
                     Console.Write("Enter pizza name: ");
                     var pizzaName = Console.ReadLine();
-                    if (pizzaName == null)
+                    if (pizzaName == null || pizzaName.Trim()=="")
                     {
                         Console.WriteLine("Please enter correct name!");
                         goto nameInput;
@@ -52,7 +52,10 @@ namespace AdoNetIntro
                         goto countInput;
                     }
 
-                    SqlCommand addPizza = new SqlCommand($"INSERT INTO Pizzas VALUES('{pizzaName}',{pizzaPrice},{pizzaIngridientCount})", connection);
+                    SqlCommand addPizza = new SqlCommand("INSERT INTO Pizzas VALUES('@pizzaName',@price,@count)", connection);
+                    addPizza.Parameters.AddWithValue("@pizzaName", pizzaName);
+                    addPizza.Parameters.AddWithValue("@price", price);
+                    addPizza.Parameters.AddWithValue("@count", count);
 
                     var insertResult = addPizza.ExecuteNonQuery();
 
@@ -76,7 +79,8 @@ namespace AdoNetIntro
                         goto idInput;
                     }
 
-                    SqlCommand deletePizza = new SqlCommand($"DELETE FROM Pizzas WHERE Id={id}", connection);
+                    SqlCommand deletePizza = new SqlCommand("DELETE FROM Pizzas WHERE Id=@id", connection);
+                    deletePizza.Parameters.AddWithValue("@id", id);
 
                     var deletedResult = deletePizza.ExecuteNonQuery();
 
